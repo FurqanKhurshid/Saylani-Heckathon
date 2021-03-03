@@ -6,8 +6,10 @@ import adminLogin from '../components/login'
 import company from '../components/Company'
 // import  from '../components/companyAdmin'
 import companyAdmin from '../components/Admin';
-import Student from '../components/Student'
+import StudentList from '../components/appliedStudentList'
+import student2 from '../components/Student2'
 import SignUp from '../components/SignUp'
+import StudentListAdmin from '../components/studentListAdmin'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 
@@ -22,8 +24,8 @@ function StackNavigator(props) {
 
             <Stack.Screen name='Login' component={adminLogin} />
             <Stack.Screen name='Company' component={TabNavigator} />
-            <Stack.Screen name='Admin' component={companyAdmin} />
-            <Stack.Screen name='Student' component={Student} />
+            <Stack.Screen name='Admin' component={TabNavigatorAdmin} />
+            <Stack.Screen name='Student' component={student2} />
             <Stack.Screen name='SignUp' component={SignUp} />
 
 
@@ -38,7 +40,20 @@ function TabNavigator(props) {
         <Tab.Navigator>
 
             <Tab.Screen name="Company" component={company} />
-            <Tab.Screen name="Student" component={Student} />
+            <Tab.Screen name="Student List" component={StudentList} />
+
+
+
+
+        </Tab.Navigator>
+    );
+}
+function TabNavigatorAdmin(props) {
+    return (
+        <Tab.Navigator>
+
+            <Tab.Screen name="Company Admin" component={companyAdmin} />
+            <Tab.Screen name="Student List Admin" component={StudentListAdmin} />
 
 
 

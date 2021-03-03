@@ -17,14 +17,13 @@ import {
     TouchableHighlight,
     TextInput,
     FlatList,
-    Button
 
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 // import { useEffect } from 'react';
 
 
-function companyAdmin(props) {
+function StudentListAdmin(props) {
     // const [modalVisible, setModalVisible] = useState(false);
     const clickHandler = () => {
         //function to handle click on floating Action Button
@@ -35,13 +34,12 @@ function companyAdmin(props) {
     const [jobTitle, setjobTitle] = useState('')
     const [qualification, setQualification] = useState('')
     const [experience, setExperience] = useState('')
-    const [companyDetail, setcompanyDetail] = useState('')
-    const [documentId,setdocumentId] = useState('')
+    const [studentDetail, setstudentDetail] = useState('')
 
     useEffect(() => {
-        getCompanyDetail()
-        console.log('yedetil...)', companyDetail)
-    }, [companyDetail])
+        getStudentDetail()
+        // console.log('yedetil...)', companyDetail)
+    }, [studentDetail])
 
     // const [isModalVisible, setModalVisible] = useState(false);
 
@@ -67,26 +65,21 @@ function companyAdmin(props) {
 
     }
 
-    const getCompanyDetail = async (companyName,jobTitle,qualification,experience) => {
+    const getStudentDetail = async () => {
         var detail = []
 
-        await firebase.firestore().collection('companyDetail').get().then(function (snaps) {
+        await firebase.firestore().collection('studentDetail').get().then(function (snaps) {
             snaps.forEach((doc) => {
                 console.log('doc--->', doc.data())
-                detail.push({ ...doc.data(),DocumentId:doc.id })
-                setdocumentId(detail[0].DocumentId)
-                setcompanyName(detail[0].companyName)
-                setjobTitle(detail[0].jobTitle)
-                setQualification(detail[0].qualification)
-                setExperience(detail[0].experience)
+                detail.push({ ...doc.data() })
                 console.log('detail--->', detail)
 
 
 
             })
-            setcompanyDetail(detail)
+            setstudentDetail(detail)
 
-            console.log('alldetail****', companyDetail)
+            console.log('studentdetail****', studentDetail)
 
         }).catch(function (error) {
             Alert.alert(error)
@@ -97,38 +90,6 @@ function companyAdmin(props) {
 
 
     }
-
-    const editCompanyDetail = async () => {
-
-
-        if (companyName,jobTitle,qualification,experience) {
-            getCompanyDetail()
-            // const fbid = props.data.id
-
-
-            firebase.firestore().collection('companyDetail').doc(documentId).update({
-                companyName,jobTitle,qualification,experience
-
-            }).then(() => {
-                Alert.alert('Company Detail Updated successfully')
-
-            }).catch(function (error) {
-                Alert.alert(error)
-
-
-            })
-
-
-
-
-        }
-        else {
-            Alert.alert('error')
-            getcompanyDetail(companyName,jobTitle,qualification,experience)
-
-        }
-    }
-
 
     return (
 
@@ -160,19 +121,19 @@ function companyAdmin(props) {
                     />
                 </TouchableOpacity> */}
                
-                <Text style={{ marginLeft:'25%',fontSize:20,fontWeight:'bold',fontFamily:'serif' }}>Company Detail</Text>
+                <Text style={{ marginLeft:'25%',fontSize:20,fontWeight:'bold',fontFamily:'serif' }}>Students List</Text>
 
                     <FlatList
-                        data={companyDetail}
+                        data={studentDetail}
                         // style={{display:'flex',alignItems:'center'}}
-                        keyExtractor={elem => elem.companyName}
+                        keyExtractor={elem => elem.name}
                         renderItem={elem => (<View style={styles.middle}>
-                            <Text><Text style={{ fontSize: 15, fontWeight: 'bold', color: 'purple' }}>Company Name:</Text><Text style={{ fontSize: 15, color: 'green' }}> {elem.item.companyName}</Text></Text>
-                            <Text><Text style={{ fontSize: 15, fontWeight: 'bold', color: 'purple' }}>Job Title:</Text><Text style={{ fontSize: 15, color: 'green' }}> {elem.item.jobTitle}</Text></Text>
+                            <Text><Text style={{ fontSize: 15, fontWeight: 'bold', color: 'purple' }}>Name:</Text><Text style={{ fontSize: 15, color: 'green' }}> {elem.item.name}</Text></Text>
+                            <Text><Text style={{ fontSize: 15, fontWeight: 'bold', color: 'purple' }}>Father Name:</Text><Text style={{ fontSize: 15, color: 'green' }}> {elem.item.fname}</Text></Text>
+
+                            <Text><Text style={{ fontSize: 15, fontWeight: 'bold', color: 'purple' }}>Job Applied for:</Text><Text style={{ fontSize: 15, color: 'green' }}> {elem.item.jobTitle}</Text></Text>
                             <Text><Text style={{ fontSize: 15, fontWeight: 'bold', color: 'purple' }}>Qualification:</Text><Text style={{ fontSize: 15, color: 'green' }}> {elem.item.qualification}</Text></Text>
                             <Text><Text style={{ fontSize: 15, fontWeight: 'bold', color: 'purple' }}>Experience:</Text><Text style={{ fontSize: 15, color: 'green' }}> {elem.item.experience}</Text></Text>
-                            <Button title={'Edit'} onPress={() => setModalVisible(true)} /> 
-
 
 
                             {/* <Text><Title>Phone No: </Title><Title style={{ color: 'purple' }}>{elem.item.number}</Title></Text>
@@ -209,7 +170,7 @@ function companyAdmin(props) {
 
 
 
-            <View style={styles.centeredView}>
+            {/* <View style={styles.centeredView}>
                 <Modal
                     animationType="slide"
                     transparent={true}
@@ -225,19 +186,14 @@ function companyAdmin(props) {
                             <TextInput
                                 placeholder='Company Name'
                                 style={{ fontSize: 20 }}
-                                // value={companyName}
-                                keyboardType='text'
-                                underlineColorAndroid='transparent'
-
-                                onChangeText={(text) => setcompanyName(text)}
+                                onChangeText={(companyName) => setcompanyName(companyName)}
 
 
                             />
                             <TextInput
                                 placeholder='Job Title'
                                 style={{ fontSize: 20, margin: 20 }}
-                                value={jobTitle}
-                                onChangeText={(text) => setjobTitle(text)}
+                                onChangeText={(jobTitle) => setjobTitle(jobTitle)}
 
 
 
@@ -245,8 +201,7 @@ function companyAdmin(props) {
                             <TextInput
                                 placeholder='Qualification'
                                 style={{ fontSize: 20, margin: 20 }}
-                                value={qualification}
-                                onChangeText={(text) => setQualification(text)}
+                                onChangeText={(qualification) => setQualification(qualification)}
 
 
 
@@ -254,8 +209,7 @@ function companyAdmin(props) {
                             <TextInput
                                 placeholder='Experience'
                                 style={{ fontSize: 20 }}
-                                value={experience}
-                                onChangeText={(text) => setExperience(text)}
+                                onChangeText={(experience) => setExperience(experience)}
 
 
 
@@ -268,11 +222,11 @@ function companyAdmin(props) {
                                 <Text style={styles.textStyle}>Hide Modal</Text>
                             </Pressable>
                             <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} >
-                                <Text style={styles.loginText} onPress={editCompanyDetail}>Save</Text>
+                                <Text style={styles.loginText} onPress={saveCompanyDetail}>Save</Text>
                             </TouchableHighlight>
                         </View>
                     </View>
-                </Modal>
+                </Modal> */}
                 {/* <Pressable
                     style={[styles.button, styles.buttonOpen]}
                     onPress={() => setModalVisible(true)}
@@ -281,7 +235,7 @@ function companyAdmin(props) {
                 </Pressable> */}
 
 
-            </View>
+            {/* </View> */}
 
 
 
@@ -309,7 +263,7 @@ function companyAdmin(props) {
     );
 
 }
-export default companyAdmin;
+export default StudentListAdmin;
 const styles = StyleSheet.create({
     container: {
         flex: 1,

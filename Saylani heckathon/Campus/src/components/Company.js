@@ -17,8 +17,9 @@ import {
     TouchableHighlight,
     TextInput,
     FlatList,
-    Title
+
 } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 // import { useEffect } from 'react';
 
 
@@ -34,11 +35,12 @@ function company(props) {
     const [qualification, setQualification] = useState('')
     const [experience, setExperience] = useState('')
     const [companyDetail, setcompanyDetail] = useState('')
+    const [documentId,setdocumentId] = useState('')
 
     useEffect(() => {
         getCompanyDetail()
         console.log('yedetil...)', companyDetail)
-    }, [])
+    }, [companyDetail])
 
     // const [isModalVisible, setModalVisible] = useState(false);
 
@@ -50,8 +52,10 @@ function company(props) {
     // };
 
     const saveCompanyDetail = async () => {
+
+        var docid = documentId
         await firebase.firestore().collection('companyDetail').add({
-            companyName, jobTitle, qualification, experience
+            companyName, jobTitle, qualification, experience,docid
         }).then(() => {
             Alert.alert('Company Detail save successfully')
         }).catch(function (error) {
@@ -70,7 +74,7 @@ function company(props) {
         await firebase.firestore().collection('companyDetail').get().then(function (snaps) {
             snaps.forEach((doc) => {
                 console.log('doc--->', doc.data())
-                detail.push({ ...doc.data() })
+                detail.push({ ...doc.data(),documentId:doc.id })
                 console.log('detail--->', detail)
 
 
@@ -92,10 +96,11 @@ function company(props) {
 
     return (
 
-
+        <ScrollView>
 
         <SafeAreaView style={styles.container}>
-            <View style={styles.container}>
+
+            <View >
                 {/* <Text style={styles.titleStyle}>
         Example of React Native Floating Action Button
       </Text>
@@ -118,7 +123,51 @@ function company(props) {
                         style={styles.floatingButtonStyle}
                     />
                 </TouchableOpacity> */}
+               
+                <Text style={{ marginLeft:'25%',fontSize:20,fontWeight:'bold',fontFamily:'serif' }}>Company Detail</Text>
+
+                    <FlatList
+                        data={companyDetail}
+                        // style={{display:'flex',alignItems:'center'}}
+                        keyExtractor={elem => elem.companyName}
+                        renderItem={elem => (<View style={styles.middle}>
+                            <Text><Text style={{ fontSize: 15, fontWeight: 'bold', color: 'purple' }}>Company Name:</Text><Text style={{ fontSize: 15, color: 'green' }}> {elem.item.companyName}</Text></Text>
+                            <Text><Text style={{ fontSize: 15, fontWeight: 'bold', color: 'purple' }}>Job Title:</Text><Text style={{ fontSize: 15, color: 'green' }}> {elem.item.jobTitle}</Text></Text>
+                            <Text><Text style={{ fontSize: 15, fontWeight: 'bold', color: 'purple' }}>Qualification:</Text><Text style={{ fontSize: 15, color: 'green' }}> {elem.item.qualification}</Text></Text>
+                            <Text><Text style={{ fontSize: 15, fontWeight: 'bold', color: 'purple' }}>Experience:</Text><Text style={{ fontSize: 15, color: 'green' }}> {elem.item.experience}</Text></Text>
+
+
+                            {/* <Text><Title>Phone No: </Title><Title style={{ color: 'purple' }}>{elem.item.number}</Title></Text>
+                        <Text><Title>Blood Group: </Title><Title style={styles.top}>{elem.item.bloodGroup}</Title></Text>
+
+                        <Text><Title>Health: </Title><Title style={{ color: 'purple' }}>{elem.item.Health}</Title></Text> */}
+                            {/* <Text><Title>tokenId: </Title><Title style={{ color: 'purple' }}>{elem.item.tokenId}</Title></Text> */}
+
+                            {/* <Button title={`Chat with ${elem.item.name}`} onPress={() => navigateToChat(elem.item.fbid)} /> */}
+
+                        </View>)}
+                    />
+
+
+
             </View>
+            <Pressable
+                    style={[styles.button, styles.buttonOpen]}
+                    onPress={() => setModalVisible(true)}
+
+                >
+                    <Image
+
+                        source={{
+                            uri:
+                                'https://raw.githubusercontent.com/AboutReact/sampleresource/master/plus_icon.png',
+                        }}
+
+                        style={styles.floatingButtonStyle} />
+                        {/* <Text>Add Company Detail</Text> */}
+                </Pressable>
+
+
 
 
 
@@ -185,41 +234,11 @@ function company(props) {
                 >
                     <Text style={styles.textStyle}>Show Modal</Text>
                 </Pressable> */}
-                <Pressable
-                    style={[styles.button, styles.buttonOpen]}
-                    onPress={() => setModalVisible(true)}
 
-                >
-                    <Image
-                        //We are making FAB using TouchableOpacity with an image
-                        //We are using online image here
-                        source={{
-                            uri:
-                                'https://raw.githubusercontent.com/AboutReact/sampleresource/master/plus_icon.png',
-                        }}
-                        //You can use you project image Example below
-                        //source={require('./images/float-add-icon.png')}
-                        style={styles.floatingButtonStyle} />
-                    {/* <Text style={styles.textStyle}>Show Modal</Text> */}
-                </Pressable>
+
             </View>
 
-            <FlatList
-                data={companyDetail}
-                // style={{display:'flex',alignItems:'center'}}
-                keyExtractor={elem => elem.name}
-                renderItem={elem => (<View style={styles.middle}>
-                    <Text><Title>Name: </Title><Title style={styles.top}>{elem.item.companyName}</Title></Text>
-                    <Text><Title>Phone No: </Title><Title style={{ color: 'purple' }}>{elem.item.jobTitle}</Title></Text>
-                    <Text><Title>Blood Group: </Title><Title style={styles.top}>{elem.item.qualification}</Title></Text>
 
-                    <Text><Title>Health: </Title><Title style={{ color: 'purple' }}>{elem.item.experience}</Title></Text>
-                    {/* <Text><Title>tokenId: </Title><Title style={{ color: 'purple' }}>{elem.item.tokenId}</Title></Text> */}
-                    {/* <Button title={`Chat with ${elem.item.name}`} onPress={() => navigateToChat(elem.item.fbid)} /> */}
-
-
-                </View>)}
-                    />  
 
 
 
@@ -239,30 +258,32 @@ function company(props) {
 
 
         </SafeAreaView>
+        </ScrollView>
+
 
     );
 
 }
 export default company;
 const styles = StyleSheet.create({
-                container: {
-                flex: 1,
+    container: {
+        flex: 1,
         backgroundColor: 'white',
         padding: 10,
     },
     titleStyle: {
-                fontSize: 28,
+        fontSize: 28,
         fontWeight: 'bold',
         textAlign: 'center',
         padding: 10,
     },
     textStyle: {
-                fontSize: 16,
+        fontSize: 16,
         textAlign: 'center',
         padding: 10,
     },
     touchableOpacityStyle: {
-                position: 'absolute',
+        position: 'absolute',
         width: 50,
         height: 50,
         alignItems: 'center',
@@ -271,76 +292,76 @@ const styles = StyleSheet.create({
         bottom: 30,
     },
     floatingButtonStyle: {
-                resizeMode: 'contain',
-        width: 50,
+        resizeMode: 'contain',
+        // width: 50,
         height: 50,
         //   marginTop:500
         //backgroundColor:'black'
     },
     // centeredView: {
-                //     flex: 1,
-                //     justifyContent: 'flex-start',
-                //     alignItems: 'center',
-                //     marginTop: 22,
-                // },
-                // modalView: {
-                //     // margin: 20,
-                //     backgroundColor: 'white',
-                //     borderRadius: 20,
-                //     padding: 100,
-                //     alignItems: 'center',
-                //     shadowColor: '#000',
-                //     shadowOffset: {
-                //         width: 0,
-                //         height: 2,
-                //     },
-                //     shadowOpacity: 0.25,
-                //     shadowRadius: 3.84,
-                //     elevation: 20,
-                // },
-                // openButton: {
-                //     backgroundColor: '#F194FF',
-                //     borderRadius: 20,
-                //     padding: 10,
-                //     elevation: 2,
-                // },
-                // textStyle: {
-                //     color: 'white',
-                //     fontWeight: 'bold',
-                //     textAlign: 'center',
-                // },
-                // modalText: {
-                //     height: 45,
-                //     width: 50,
-                //     borderBottomColor: 'red',
+    //     flex: 1,
+    //     justifyContent: 'flex-start',
+    //     alignItems: 'center',
+    //     marginTop: 22,
+    // },
+    // modalView: {
+    //     // margin: 20,
+    //     backgroundColor: 'white',
+    //     borderRadius: 20,
+    //     padding: 100,
+    //     alignItems: 'center',
+    //     shadowColor: '#000',
+    //     shadowOffset: {
+    //         width: 0,
+    //         height: 2,
+    //     },
+    //     shadowOpacity: 0.25,
+    //     shadowRadius: 3.84,
+    //     elevation: 20,
+    // },
+    // openButton: {
+    //     backgroundColor: '#F194FF',
+    //     borderRadius: 20,
+    //     padding: 10,
+    //     elevation: 2,
+    // },
+    // textStyle: {
+    //     color: 'white',
+    //     fontWeight: 'bold',
+    //     textAlign: 'center',
+    // },
+    // modalText: {
+    //     height: 45,
+    //     width: 50,
+    //     borderBottomColor: 'red',
 
 
 
-                //     marginBottom: 15,
-                //     textAlign: 'center',
-                // },
-                // inputs: {
-                //     height: 45,
-                //     marginLeft: 10,
-                //     borderRadius: 20,
-                //     flex: 1,
-                // },
+    //     marginBottom: 15,
+    //     textAlign: 'center',
+    // },
+    // inputs: {
+    //     height: 45,
+    //     marginLeft: 10,
+    //     borderRadius: 20,
+    //     flex: 1,
+    // },
 
-                centeredView: {
-                flex: 1,
+    centeredView: {
+        flex: 1,
         justifyContent: "center",
         alignItems: "center",
         marginTop: 22
     },
     modalView: {
-                margin: 20,
+        margin: 20,
         backgroundColor: "white",
         borderRadius: 20,
         padding: 35,
         alignItems: "center",
         shadowColor: "#000",
         shadowOffset: {
-                width: 0,
+            width: 0,
             height: 2
         },
         shadowOpacity: 0.25,
@@ -348,26 +369,26 @@ const styles = StyleSheet.create({
         elevation: 5
     },
     button: {
-                borderRadius: 20,
+        borderRadius: 20,
         padding: 10,
         elevation: 2,
         marginLeft: 280,
-        marginTop: 150
+        // marginTop: 100
     },
     buttonOpen: {
-                backgroundColor: "#F194FF",
+        backgroundColor: "gray",
     },
     buttonClose: {
-                backgroundColor: "#2196F3",
+        backgroundColor: "#2196F3",
     },
     textStyle: {
-                width: 50,
+        width: 50,
         color: "white",
         fontWeight: "bold",
         textAlign: "center"
     },
     modalText: {
-                marginBottom: 15,
+        marginBottom: 15,
         textAlign: "center",
         fontSize: 30
 
@@ -376,7 +397,7 @@ const styles = StyleSheet.create({
 
 
 
-                height: 45,
+        height: 45,
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
@@ -387,14 +408,14 @@ const styles = StyleSheet.create({
     },
     loginButton: {
 
-                backgroundColor: "#166FE5",
+        backgroundColor: "#166FE5",
 
     },
     loginText: {
-                color: 'white',
+        color: 'white',
     },
     middle: {
-                flex: 0.3,
+        flex: 0.3,
         backgroundColor: "#e9ebee",
         borderWidth: 5,
         marginBottom: 10,
